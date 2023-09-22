@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+
+<launch>
+
+	<arg name="agent" default="agent1"/>
+	
+		<!-- AMCL -->
+	<include file="$(find hamster_robot_loc)/launch/amcl.launch" >
+		<arg name="agent" value="$(arg agent)"/>
+		<arg name="tf_broadcast" value="false"/>
+	</include>
+<!--
+	<node name="transform_map_odom" pkg="tf2_ros" type="static_transform_publisher" args="0.0 0.0 0.0 0 0 0 1 map agent1/odom" />
+-->
+
+	<group ns="$(arg agent)">
+		<!-- Odom-IMU Extended Kalman Filter-->->
+<!--
+		<node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization_map" clear_params="true"> 
+			<rosparam command="load" file="$(find hamster_robot_loc)/params/rl_odom.yaml" />
+			
+			<param name="map_frame" value="/map"/>
+			<param name="odom_frame" value="/$(arg agent)/odom"/>
+			<param name="base_link_frame" value="/$(arg agent)/base_link"/>
+			<param name="world_frame" value="/$(arg agent)/odom"/>
+			
+			<param name="odom0" value="/$(arg agent)/odom/raw"/>
+			
+			<remap from="odometry/filtered" to="/$(arg agent)/odom/filtered_odom" />
+			<remap from="set_pose" to="/$(arg agent)/initialpose" />
+			<remap from="cmd_vel" to="/$(arg agent)/cmd_vel" />
+			
+		</node>
+-->
+		
+		<node pkg="robot_localization" type="ukf_localization_node" name="ekf_localization_map_map" clear_params="true"> 
+			<rosparam command="load" file="$(find hamster_robot_loc)/params/rl_map.yaml" />
+
+			<param name="alpha" value="0.001"/>
+			<param name="beta" value="2"/>
+			<param name="kappa" value="0"/>
+			<param name="map_frame" value="/map"/>
+			<param name="odom_frame" value="/$(arg agent)/odom"/>
+			<param name="base_link_frame" value="/$(arg agent)/base_link"/>
+			<param name="world_frame" value="/map"/>
+			
+<!--
+			<param name="odom0" value="/$(arg agent)/odom/filtered_odom"/>
+-->
+			<param name="odom0" value="/$(arg agent)/odom/raw"/>
+			<param name="pose0" value="/$(arg agent)/pose/amcl"/>
+			<remap from="odometry/filtered" to="/$(arg agent)/odom/filtered_map" />
+			<remap from="set_pose" to="/$(arg agent)/initialpose" />
+<!--
+			<remap from="cmd_vel" to="/$(arg agent)/cmd_vel" />
+-->
+			
+		</node>
+		
+		<node name="ack2cmd_vel" pkg="hamster_robot_loc" type="ack2cmd_vel.py">
+			<param name="ackermann_topic_name"		value="ackermann_cmd"/>
+			<param name="cmd_vel_topic_name"		value="cmd_vel"/>
+		</node>
+		
+	</group>
+
+</launch>

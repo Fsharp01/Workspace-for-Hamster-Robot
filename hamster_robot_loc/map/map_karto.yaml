@@ -1,0 +1,8 @@
+image: map_karto.pgm
+resolution: 0.010000
+origin: [-9.523026, -5.448423, 0.000000]
+# origin: [-9.223026, -5.648423, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+

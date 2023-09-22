@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<launch>
+	<!-- Robot calibration -->
+	<arg name="agent" default="agent1"/>
+	<arg name="localization_mode" default="rl_scan"/> <!-- amcl/rl_odom-->
+	
+	<!-- AMCL -->
+	<group if="$(eval arg('localization_mode')  == 'amcl')">
+		<include file="$(find hamster_robot_loc)/launch/amcl.launch" >
+			<arg name="agent" value="$(arg agent)"/>
+		</include>
+	</group>
+	
+	<!-- Robot localization odom -->
+	<group if="$(eval arg('localization_mode')  == 'rl_odom')">
+		<include file="$(find hamster_robot_loc)/launch/rl_odom.launch" >
+			<arg name="agent" value="$(arg agent)"/>
+		</include>
+	</group>
+	
+	<!-- Robot localization scan_matcher -->
+	<group if="$(eval arg('localization_mode')  == 'rl_scan')">
+		<include file="$(find hamster_robot_loc)/launch/rl_scan.launch" >
+			<arg name="agent" value="$(arg agent)"/>
+		</include>
+	</group>
+	
+	<!-- Map_server -->
+	<node pkg="map_server" type="map_server" name="map_server" output="screen" args="$(find hamster_robot_loc)/map/map_karto.yaml"/> 
+</launch>

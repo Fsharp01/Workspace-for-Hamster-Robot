@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!-- Note: joystick control mode working instead of wandering mode -->
+	<env name="GAZEBO_MODEL_PATH" value="$(find hamster_vehicle_gazebo):$(find hamster_vehicle_gazebo)/models"/>
+	<arg name="gui" value="false"/>
+	<!-- Robot calibration -->
+	<arg name="agent" value="agent1"/>
+	<arg name="is_publishTF" value="true"/>
+	<arg name="tf_target_topic" default="/odom/raw"/>
+	<arg name="use_keyboard" value="true"/>
+	<arg name="x" value="0.0"/>
+	<arg name="y" value="0.0"/>
+	
+	
+	<include file="$(find hamster_vehicle_gazebo)/launch/hamster_world.launch">
+		<arg name="gui" value="$(arg gui)"/>
+	</include>
+	
+	<node pkg="rviz" type="rviz" name="rviz" output="screen" args="-d $(find hamster_robot_loc)/rviz/hamsters.rviz"/> 
+	
+	<include file="$(find hamster_vehicle_gazebo)/launch/hamster_vehicle_spawner.launch">
+		<arg name="agent" value="$(arg agent)"/>
+		<arg name="use_keyboard" value="$(arg use_keyboard)"/>
+		<arg name="x" value="$(arg x)"/>
+		<arg name="y" value="$(arg y)"/>
+		<arg name="is_publishTF" value="$(arg is_publishTF)"/>
+		<arg name="tf_target_topic" value="$(arg tf_target_topic)"/>
+		<arg name="robot_version" value="V6"/>
+	</include>
+		
+
+</launch>
