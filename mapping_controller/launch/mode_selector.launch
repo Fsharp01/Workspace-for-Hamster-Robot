@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<launch>
+
+	<!-- NOTE: launch files should be without the '.launch' extension -->
+
+	<arg name="mapping_launch_package" default="mapping_controller" />
+	<arg name="mapping_launch_file" default="mapping_selector" />
+
+	<arg name="localization_launch_package" default="mapping_controller" />
+	<arg name="localization_launch_file" default="amcl" />
+
+	<arg name="outdoor_mode_launch_package" default="hamster_launch" />
+	<arg name="outdoor_mode_launch_file" default="DISABLED_TESTS_NEEDED" />
+
+	<arg name="starting_map_mode" default="localization" /> <!--Options: localization , slam, outdoor-->
+
+	<arg name="output" default="screen" />
+	<arg name="respawn" default="false" />
+
+	<arg name="robot_id" default="$(env HAMSTER_ID)"/>
+
+	<node pkg="mapping_controller" type="client_side" name="mapping_controller_client_master_$(env HAMSTER_ID)" output="$(arg output)" respawn="$(arg respawn)">
+		<param name="mapping_launch_package" value="$(arg mapping_launch_package)" />
+		<param name="mapping_launch_file" value="$(arg mapping_launch_file)" />
+
+		<param name="localization_launch_package" value="$(arg localization_launch_package)" />
+		<param name="localization_launch_file" value="$(arg localization_launch_file)" />
+
+		<param name="outdoor_mode_launch_package" value="$(arg outdoor_mode_launch_package)" />
+		<param name="outdoor_mode_launch_file" value="$(arg outdoor_mode_launch_file)" />
+
+		<param name="starting_map_mode" value="$(arg starting_map_mode)" />
+		<param name="enable_mapping" value="true" />
+
+	</node>
+
+	<!-- Map server -->
+	<node name="map_server_$(arg robot_id)" pkg="map_server" type="map_server" args="$(find mapping_controller)/maps/indoor.yaml" /> 
+
+	<include file="$(find mapping_controller)/launch/server_side.launch">
+		<arg name="robot_id" value="$(arg robot_id)" />
+		<arg name="map_file_path" value="$(find mapping_controller)/maps/" />
+		<arg name="map_server_name" value="map_server_$(arg robot_id)" />
+	</include>
+	
+</launch>

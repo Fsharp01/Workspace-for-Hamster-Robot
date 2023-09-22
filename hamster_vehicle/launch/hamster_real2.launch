@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<launch>
+
+
+	
+
+    <arg name="use_sim_time" default="true" />
+
+    <arg name="headless" default="false" />
+
+    <arg name="front_laser" default="true" />
+    <arg name="default_config" value="front_laser" if="$(arg front_laser)" />
+    <arg name="default_config" value="base" unless="$(arg front_laser)" />
+
+
+   
+    <arg name="global_frame_id" default="map"/>
+    <arg name="agent" default="agent1"/>
+    <arg name="tf_broadcast" default="true"/>
+    <arg name="odom_frame_id" default="$(arg agent)/odom"/>
+    <arg name="base_frame_id" default="$(arg agent)/base_link"/>
+    <arg name="odom_topic" default="$(arg agent)/odom"/>
+    <arg name="laser_topic" default="$(arg agent)/scan"/>
+
+
+
+
+
+   <!-- SLAM map load-->
+   <arg name="map_file" default="$(find mapping_controller)/maps/st123.yaml" />
+   <node pkg="map_server" type="map_server" name="map_server"  args="$(arg map_file)"/>
+	
+	
+	<!-- RVIZ -->
+	<node pkg="rviz" type="rviz" name="rviz" output="screen" args="-d $(find hamster_vehicle)/rviz/hamsters.rviz"/> 
+	
+	
+	<!-- Cartographer 
+	<include file="$(find mapping_controller)/launch/mapping/karto.launch"/>
+          -->
+
+      <!-- AMCL -->    
+<arg name="use_map_topic" default="true"/>
+  <arg name="scan_topic" default="scan" />
+
+    <node pkg="amcl" type="amcl" name="amcl">
+    <param name="use_map_topic" value="$(arg use_map_topic)"/>
+    <!-- Publish scans from best pose at a max of 10 Hz -->
+    <remap from="scan" to="/$(arg agent)/scan" />
+    <remap from="amcl_pose" to="/$(arg agent)/pose/amcl" />
+    <remap from="static_map" to="/static_map" />
+    <remap from="map" to="/map" />
+
+    <param name="global_frame_id" value="map"/>
+    <param name="odom_frame_id" value="$(arg agent)/odom"/>
+    <param name="base_frame_id" value="$(arg agent)/base_link"/>
+    <param name="tf_broadcast" value="$(arg tf_broadcast)"/>  
+    </node>
+    <!--  MOVE BASE-->
+
+      <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+
+    <param name="base_global_planner" value="navfn/NavfnROS"/>
+    <!--<param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS"/>-->
+    <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS"/>
+
+    <rosparam file="$(find teb_navigation)/config/base_global_planner.yaml" command="load"/>
+    <!--<rosparam file="$(find teb_navigation)/config/base_local_planner.yaml" command="load"/>-->
+    <rosparam file="$(find teb_navigation)/config/teb_local_planner.yaml" command="load"/>
+
+    <!-- observation sources located in costmap_common.yaml -->
+    <rosparam file="$(find teb_navigation)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find teb_navigation)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+
+    <!-- local costmap, needs size -->
+    <rosparam file="$(find teb_navigation)/config/local_costmap_params.yaml" command="load" ns="local_costmap" />
+    <param name="local_costmap/width" value="10.0"/>
+    <param name="local_costmap/height" value="10.0"/>
+
+    <!-- static global costmap, static map provides size -->
+    <rosparam file="$(find teb_navigation)/config/global_costmap_params.yaml" command="load" ns="global_costmap"/>
+    
+  </node>
+
+
+    <!-- <node name="twist_to_ackermann_node" pkg="hamster_teleop" type="twist_to_ackermann_node.py"/> 
+-->
+	 	
+	<!--node name="transform_map_odom" pkg="tf2_ros" type="static_transform_publisher" args="0.0 0.0 0.0 0 0 0 1 map agent1/odom" /-->
+	
+</launch>

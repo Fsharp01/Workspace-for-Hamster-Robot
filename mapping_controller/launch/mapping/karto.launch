@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<launch>
+
+	<arg name="robot_id" value="agent1" />
+	<arg name="scan_topic" default="/$(arg robot_id)/scan" /> 
+	<arg name="odom_topic" default="/$(arg robot_id)/odom" />
+
+	<group ns="$(arg robot_id)">
+		<!-- slam_karto -->
+  		<node pkg="slam_karto" type="slam_karto" name="slam_karto" output="screen">
+			<remap from="scan" to="$(arg scan_topic)"/>
+			<remap from="map" to="/map" />
+			<param name="base_frame" value="/$(arg robot_id)/base_link" />
+			<param name="odom_frame" value="$(arg odom_topic)" />
+ 			<rosparam command="load" file="$(find mapping_controller)/params/karto_mapper_params.yaml" />
+  		</node>
+	</group>
+
+</launch>
+

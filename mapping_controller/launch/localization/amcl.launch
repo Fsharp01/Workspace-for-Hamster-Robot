@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!--
+
+    Name:
+        Hamster localization launch
+
+    Description:
+        Launches amcl localization nodes for robot_localization
+
+-->
+
+<launch>
+
+	<arg name="agent" default="$(env HAMSTER_ID)"/>
+	<arg name="tf_broadcast" default="true"/>
+
+	<group ns="$(arg agent)">
+	
+		<node pkg="amcl" type="amcl" name="amcl" output="screen">
+			<rosparam file="$(find mapping_controller)/params/amcl.yaml" command="load" />
+			<remap from="scan" to="/$(arg agent)/scan" />
+			
+			<remap from="amcl_pose" to="/$(arg agent)/pose/amcl" />
+			
+			<remap from="static_map" to="/static_map" />
+			<remap from="map" to="/map" />
+			
+			<param name="global_frame_id" value="map"/>
+			<param name="odom_frame_id" value="/$(arg agent)/odom"/>
+			<param name="base_frame_id" value="/$(arg agent)/base_link"/>
+			<param name="tf_broadcast" value="$(arg tf_broadcast)"/>
+		</node>
+	
+	</group>
+
+</launch>

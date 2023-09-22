@@ -1,0 +1,7 @@
+image: st123.pgm
+resolution: 0.100000
+origin: [-2.405690, -3.980116, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+

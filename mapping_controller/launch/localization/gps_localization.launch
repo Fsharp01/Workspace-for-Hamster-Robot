@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+ 
+<launch>
+
+    <arg name="robot_id" />
+
+    <group ns="$(arg robot_id)">
+
+        <node name="gps_localization" pkg="hamster_gps_localization" type="localization_node">
+            <param name="tf_prefix" value="$(arg robot_id)" />
+        </node>
+
+    </group>
+
+</launch>

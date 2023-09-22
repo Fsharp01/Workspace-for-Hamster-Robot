@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<launch>
+
+    <arg name="robot_id" value="$(env HAMSTER_ID)" />
+
+    <!-- gmapping or hector_mapping or karto-->
+    <arg name="mapping_type" default="$(optenv HAMSTER_MAPPING_TYPE karto)" />
+
+    <include file="$(find hamster_launch)/launch/mapping/$(arg mapping_type).launch" />
+
+
+
+    <group ns="$(arg robot_id)">
+        <!-- Workaround: notifies android app -->
+        <node name="dummy_pose_publisher" pkg="rostopic" type="rostopic" args="pub slam_out_pose geometry_msgs/PoseStamped '{header: {seq: 0,stamp: {secs: 0,nsecs: 0},frame_id: 'map'}, pose: { position: {x: 0.0,y: 0.0,z: 0.0},orientation: {x: 0.0,y: 0.0,z: 0.0,w: 1.0}}}'" />
+
+    </group>
+
+</launch>
