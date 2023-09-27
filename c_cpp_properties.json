@@ -1,0 +1,25 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/opt/ros/noetic/include/**",
+        "/home/bokorakoska/catkin_ws/src/diffdrive_car/include/**",
+        "/home/bokorakoska/catkin_ws/src/ros_best_practices/ros_package_template/include/**",
+        "/home/bokorakoska/catkin_ws/src/smb_common/smb_gazebo/include/**",
+        "/home/bokorakoska/catkin_ws1/src/teleop_listener/include/**",
+        "/home/bokorakoska/catkin_ws/src/teleop_twist_keyboard/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
